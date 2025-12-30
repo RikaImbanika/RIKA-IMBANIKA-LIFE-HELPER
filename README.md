@@ -1,11 +1,21 @@
-# RIKA STREAMING APP
- Timer + audio player + mouse showing + funny motivation quotes + avatar + clocks
+## <b>RIKA IMBANIKA LIFE HELPER</b>
 
-You can change params (and quotes) in bin/Debug/net6.0-windows/
+Made on WPF, c#. App builds in Visual Studio.
 
-![image](https://github.com/user-attachments/assets/d1403bc7-29bd-4735-a9d1-f4e249607eb4)  ![image](https://github.com/user-attachments/assets/aa11db06-12fd-4415-9d52-ac034181f33d)
+Timer + audio player + mouse effects + funny motivation quotes + avatars + clocks.
+#
 
-![image](https://github.com/user-attachments/assets/eaa474c1-2635-448a-ac6d-9a9364d0e9a6)  ![image](https://github.com/user-attachments/assets/90afcba2-f582-4741-9363-3fac77c93630)
+![image](Images/Preview1.png)  
+
+![image](Images/Preview2.png)
+
+![image](Images/Preview3.png)
+
+![image](Images/Preview4.png)
+
+You can change params (and quotes) in "HELPER PROGRAM FILES"
+
+Possibly this app can help concentrate when you have ADHD. And distract too.
 
 LMB + Ctrl - size changing
 
@@ -15,6 +25,6 @@ Many clicks - restart timer
 
 3 right mouse clicks - pause / continue
 
-Timer continues after restarting app
+Timer continues after restarting app.
 
 When timer reach 24 hours it restart from 00 and add +1 to M (Like M7 -> M8)
