@@ -59,6 +59,7 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
         private double _scale;
         private double _initialScale;
         private DispatcherTimer _clickTimer;
+        private DispatcherTimer _progressTimer;
 
         private Thread _movingThread;
         private MovingImageWindow _movingWindow;
@@ -114,6 +115,7 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
 
             LoadState();
             InitializeTimers();
+            UpdateProgress(); // один раз сразу после запуска
             _random = new Random();
             _currentColor = _random.Next(_colors.Count);
             _nextColor = GetNextColor();
@@ -131,6 +133,9 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
 
             string nick = File.ReadAllText($"{S.PF}Text\\Nick.txt");
             Rika.Text = nick;
+
+            string speed = File.ReadAllText($"{S.PF}Text\\Speed.txt");
+            SpeedLabel.Text = speed;
 
             FillAvas();
 
@@ -555,6 +560,10 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
             var systemTimeTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             systemTimeTimer.Tick += (s, e) => UpdateSystemTime();
             systemTimeTimer.Start();
+
+            _progressTimer = new DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
+            _progressTimer.Tick += (s, e) => UpdateProgress();
+            _progressTimer.Start();
         }
 
         private void HandleMultiClick()
@@ -647,10 +656,11 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
                 _actualElapsed = TimeSpan.FromSeconds(0);
                 _lastStartElapsed = TimeSpan.FromSeconds(0);
                 _lastStartTime = DateTime.Now;
+                UpdateProgress();
                 for (int i = 0; i < 5; i++)
                 {
-                    Console.Beep(3000, 333);
-                    Thread.Sleep(100);
+                    Console.Beep(2000, 333);
+                    Thread.Sleep(50);
                 }
                 //_lastDayCheck = _actualElapsed.Days;
             }
@@ -694,6 +704,7 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
                 new Point(0.5, 1)
             );
 
+            ProgressEmptyRect.Fill = new SolidColorBrush(interpolatedColor);
             TimerText.Foreground = gradient;
             SystemTimeText.Foreground = gradient;
             TheM.Foreground = gradient;
@@ -701,9 +712,18 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
             Track.Foreground = gradient;
             Quote.Foreground = gradient;
             Pause2.Foreground = gradient;
+            SpeedLabel.Foreground = gradient;
 
             SaveState();
             if ((DateTime.Now - _lastClickTime).TotalSeconds > 2) _clickCount = 0;
+        }
+
+        private void UpdateProgress()
+        {
+            double progress = Math.Clamp(_actualElapsed.TotalHours / 10.0, 0.0, 1.0);
+
+            ProgressFillColumn.Width = new GridLength(progress, GridUnitType.Star);
+            ProgressEmptyColumn.Width = new GridLength(1.0 - progress, GridUnitType.Star);
         }
 
         double SineLerp(double a, double b, double t) =>
@@ -737,10 +757,8 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
 
         public static Color SaturateRGB(Color color, float strength)
         {
-            // Находим среднее значение каналов (серую составляющую)
             float avg = (color.R + color.G + color.B) / 3f;
 
-            // Усиливаем отклонение от серого
             byte r = (byte)Math.Clamp(color.R + (int)((color.R - avg) * strength), 0, 255);
             byte g = (byte)Math.Clamp(color.G + (int)((color.G - avg) * strength), 0, 255);
             byte b = (byte)Math.Clamp(color.B + (int)((color.B - avg) * strength), 0, 255);

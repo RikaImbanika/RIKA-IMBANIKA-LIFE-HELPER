@@ -11,16 +11,16 @@
       "RelativeMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|f:\\programmer\\rika-imbanika-life-helper\\audioplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|solutionrelative:audioplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|f:\\programmer\\rika-imbanika-life-helper\\movingimagewindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|solutionrelative:movingimagewindow.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|f:\\programmer\\rika-imbanika-life-helper\\mousetrailoverlay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|solutionrelative:mousetrailoverlay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|f:\\programmer\\rika-imbanika-life-helper\\audioplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|solutionrelative:audioplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EFBA5C36-CB63-4290-A7E1-263A0A35714C}|RIKA IMBANIKA LIFE HELPER.csproj|f:\\programmer\\rika-imbanika-life-helper\\programfiles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -66,7 +66,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 14,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -75,6 +75,31 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
+              "ToolTip": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
+              "ViewState": "AgIAAMICAAAAAAAAAAAUwMoCAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-08T17:28:40.651Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "MainWindow.xaml",
+              "ToolTip": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml",
+              "RelativeToolTip": "MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-10-08T17:28:17.482Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -90,15 +115,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "MovingImageWindow.cs",
               "DocumentMoniker": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MovingImageWindow.cs",
               "RelativeDocumentMoniker": "MovingImageWindow.cs",
               "ToolTip": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MovingImageWindow.cs",
               "RelativeToolTip": "MovingImageWindow.cs",
-              "ViewState": "AgIAAKsAAAAAAAAAAAAAwLcAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAALQAAAAAAAAAAAAAAOQAAABEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-16T10:22:42.266Z"
+              "WhenOpened": "2026-03-16T10:22:42.266Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -114,7 +140,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "MouseTrailOverlay.cs",
               "DocumentMoniker": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MouseTrailOverlay.cs",
               "RelativeDocumentMoniker": "MouseTrailOverlay.cs",
@@ -209,39 +235,15 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "AudioPlayer.cs",
               "DocumentMoniker": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\AudioPlayer.cs",
               "RelativeDocumentMoniker": "AudioPlayer.cs",
               "ToolTip": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\AudioPlayer.cs",
               "RelativeToolTip": "AudioPlayer.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAuwDwAAAA6AAAAAAAAAA==",
+              "ViewState": "AgIAACwAAAAAAAAAAAAmwDwAAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-23T19:39:15.995Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml.cs",
-              "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAHcCAAAAAAAAAAAUwIICAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-27T00:06:58.17Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "F:\\Programmer\\RIKA-IMBANIKA-LIFE-HELPER\\MainWindow.xaml",
-              "RelativeToolTip": "MainWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-02-23T14:52:34.03Z"
             }
           ]
         }

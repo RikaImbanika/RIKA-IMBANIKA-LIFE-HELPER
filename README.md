@@ -13,7 +13,7 @@ Timer + audio player + mouse effects + funny motivation quotes + avatars + clock
 
 ![image](Images/Preview4.png)
 
-You can change params (and quotes) in "HELPER PROGRAM FILES"
+You can change params (and quotes) in folder "LIFE HELPER PROGRAM FILES"
 
 Possibly this app can help concentrate when you have ADHD. And distract too.
 
@@ -23,8 +23,8 @@ LMB + Ctrl - size changing
 
 Many clicks - restart timer
 
-3 right mouse clicks - pause / continue
+Right mouse click - pause / continue
 
 Timer continues after restarting app.
 
-When timer reach 24 hours it restart from 00 and add +1 to M (Like M7 -> M8)
+When timer reach 10 hours it will restart from 00 and add +1 to M (Like M7 -> M8)

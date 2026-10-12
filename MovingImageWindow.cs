@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace RIKA_IMBANIKA_LIFE_HELPER
 {
@@ -13,36 +12,30 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
         private enum Direction { Forward, Backward }
 
         private readonly Image _image;
-        private readonly string _imagePath;
+        private readonly Grid _worldGrid;
+        private readonly Canvas _canvas;
+
+        private readonly ColumnDefinition _colLeft, _colMiddle, _colRight;
+        private readonly RowDefinition _rowTop, _rowMiddle, _rowBottom;
+
         private readonly double _screenWidth, _screenHeight;
-        public int _lastIndex;
 
         public double SizeFactor { get; set; } = 0.2;
         public double Amplitude { get; set; } = 0.5;
-        public double Frequency { get; set; } = 1.0;
+        public double Frequency { get; set; } = 1.35;
         public double Duration { get; set; } = 5.0;
 
         private Side _currentSide;
         private Direction _currentDirection;
-        private Point _startPos, _endPos;
         private DateTime _startTime;
-        private BitmapSource[] _pulseImages;
-        private DispatcherTimer _animationTimer;
 
-        private BitmapSource _sourceBitmap;
-        private BitmapSource _baseBitmap;
         private double _baseWidth;
         private double _baseHeight;
+        private double _maxWidth;
         private double _maxHeight;
-
-        // Новые поля для WriteableBitmap
-        private WriteableBitmap _writeableBitmap;
-        private byte[][] _frameBuffers;
-        private int _stride;
 
         public MovingImageWindow(string imagePath)
         {
-            _imagePath = imagePath;
             _screenWidth = SystemParameters.PrimaryScreenWidth;
             _screenHeight = SystemParameters.PrimaryScreenHeight;
 
@@ -55,92 +48,63 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
             ShowActivated = false;
             Focusable = false;
 
-            var canvas = new Canvas();
-            _image = new Image();
-            LoadSourceImage();
-            canvas.Children.Add(_image);
-            Content = canvas;
+            Left = 0;
+            Top = 0;
+            Width = _screenWidth;
+            Height = _screenHeight;
 
-            _image.RenderTransformOrigin = new Point(0.5, 0.5);
+            var bmp = new BitmapImage();
+            bmp.BeginInit();
+            bmp.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bmp.EndInit();
+            bmp.Freeze();
 
-            InitializeBuffer();
+            _baseWidth = _screenWidth * SizeFactor;
+            _baseHeight = _baseWidth * bmp.PixelHeight / bmp.PixelWidth;
+            _maxWidth = _baseWidth * (1 + Amplitude);
+            _maxHeight = _baseHeight * (1 + Amplitude);
+
+            _image = new Image
+            {
+                Source = bmp,
+                Stretch = Stretch.Fill,
+                RenderTransformOrigin = new Point(0.5, 0.5)
+            };
+            RenderOptions.SetBitmapScalingMode(_image, BitmapScalingMode.HighQuality);
+
+            _worldGrid = new Grid();
+
+            _colLeft = new ColumnDefinition { Width = new GridLength(_maxWidth) };
+            _colMiddle = new ColumnDefinition { Width = new GridLength(_baseWidth) };
+            _colRight = new ColumnDefinition { Width = new GridLength(_maxWidth) };
+            _worldGrid.ColumnDefinitions.Add(_colLeft);
+            _worldGrid.ColumnDefinitions.Add(_colMiddle);
+            _worldGrid.ColumnDefinitions.Add(_colRight);
+
+            _rowTop = new RowDefinition { Height = new GridLength(_maxHeight) };
+            _rowMiddle = new RowDefinition { Height = new GridLength(_baseHeight) };
+            _rowBottom = new RowDefinition { Height = new GridLength(_maxHeight) };
+            _worldGrid.RowDefinitions.Add(_rowTop);
+            _worldGrid.RowDefinitions.Add(_rowMiddle);
+            _worldGrid.RowDefinitions.Add(_rowBottom);
+
+            Grid.SetColumn(_image, 1);
+            Grid.SetRow(_image, 1);
+            _worldGrid.Children.Add(_image);
+
+            _canvas = new Canvas
+            {
+                Width = _screenWidth,
+                Height = _screenHeight,
+                ClipToBounds = true,
+                Background = Brushes.Transparent
+            };
+            _canvas.Children.Add(_worldGrid);
+            Content = _canvas;
 
             Hide();
-        }
-
-        private void LoadSourceImage()
-        {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(_imagePath, UriKind.RelativeOrAbsolute);
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            bitmap.EndInit();
-            _sourceBitmap = bitmap;
-        }
-
-        private void InitializeBuffer()
-        {
-            _baseWidth = _screenWidth * SizeFactor;
-            _baseHeight = _baseWidth * _sourceBitmap.PixelHeight / _sourceBitmap.PixelWidth;
-
-            double scaleX = _baseWidth / _sourceBitmap.PixelWidth;
-            double scaleY = _baseHeight / _sourceBitmap.PixelHeight;
-            var transform = new ScaleTransform(scaleX, scaleY);
-            _baseBitmap = new TransformedBitmap(_sourceBitmap, transform);
-            _baseBitmap.Freeze();
-
-            double minScale = 1.0 - Amplitude;
-            double maxScale = 1.0 + Amplitude;
-            _maxHeight = _baseHeight * maxScale;
-
-            int count = 20;
-            _pulseImages = new BitmapSource[count];
-            double scaleStep = (maxScale - minScale) / (count - 1);
-
-            for (int i = 0; i < count; i++)
-            {
-                double targetScaleY = minScale + scaleStep * i;
-                double currentHeight = _baseHeight * targetScaleY;
-
-                var scaleYTransform = new ScaleTransform(1, targetScaleY);
-                var scaledBitmap = new TransformedBitmap(_baseBitmap, scaleYTransform);
-                scaledBitmap.Freeze();
-
-                var squareBitmap = new RenderTargetBitmap(
-                    (int)_maxHeight, (int)_maxHeight, 96, 96, PixelFormats.Pbgra32);
-                var visual = new DrawingVisual();
-
-                using (var context = visual.RenderOpen())
-                {
-                    double x = (_maxHeight - _baseWidth) / 2;
-                    double y = _maxHeight - currentHeight;
-                    context.DrawImage(scaledBitmap, new Rect(x, y, _baseWidth, currentHeight));
-                }
-
-                squareBitmap.Render(visual);
-                squareBitmap.Freeze();
-                _pulseImages[i] = squareBitmap;
-            }
-
-            // Создаём WriteableBitmap и извлекаем байты всех кадров
-            int width = (int)_maxHeight;
-            int height = (int)_maxHeight;
-            _writeableBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Pbgra32, null);
-            _stride = width * 4; // Pbgra32 = 4 байта на пиксель
-
-            _frameBuffers = new byte[count][];
-            for (int i = 0; i < count; i++)
-            {
-                var frame = _pulseImages[i];
-                byte[] pixels = new byte[height * _stride];
-                frame.CopyPixels(pixels, _stride, 0);
-                _frameBuffers[i] = pixels;
-            }
-
-            // Устанавливаем первый кадр как источник (будет обновляться через WritePixels)
-            _writeableBitmap.WritePixels(new Int32Rect(0, 0, width, height), _frameBuffers[0], _stride, 0);
-            _image.Source = _writeableBitmap;
         }
 
         public void StartAnimation(string side, string dir)
@@ -152,42 +116,36 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
             _currentSide = parsedSide;
             _currentDirection = parsedDir;
 
-            var transformGroup = new TransformGroup();
-
-            double rotationAngle = 0;
+            double rotationAngle;
             switch (_currentSide)
             {
                 case Side.Bottom: rotationAngle = 0; break;
                 case Side.Top: rotationAngle = 180; break;
                 case Side.Left: rotationAngle = 90; break;
                 case Side.Right: rotationAngle = -90; break;
+                default: rotationAngle = 0; break;
             }
-            transformGroup.Children.Add(new RotateTransform(rotationAngle));
 
             double scaleX = 1, scaleY = 1;
-            bool needReflection = (_currentDirection == Direction.Backward && (_currentSide == Side.Bottom || _currentSide == Side.Left))
-                               || (_currentDirection == Direction.Forward && (_currentSide == Side.Top || _currentSide == Side.Right));
+            bool needReflection =
+                (_currentDirection == Direction.Backward && (_currentSide == Side.Bottom || _currentSide == Side.Left))
+             || (_currentDirection == Direction.Forward && (_currentSide == Side.Top || _currentSide == Side.Right));
             if (needReflection)
             {
-                if (_currentSide == Side.Bottom || _currentSide == Side.Top)
-                    scaleX = -1;
-                else
-                    scaleY = -1;
+                if (_currentSide == Side.Bottom || _currentSide == Side.Top) scaleX = -1;
+                else scaleY = -1;
             }
-            transformGroup.Children.Add(new ScaleTransform(scaleX, scaleY));
 
-            _image.RenderTransform = transformGroup;
+            var tg = new TransformGroup();
+            tg.Children.Add(new RotateTransform(rotationAngle));
+            tg.Children.Add(new ScaleTransform(scaleX, scaleY));
+            _image.RenderTransform = tg;
 
-            Width = _maxHeight;
-            Height = _maxHeight;
-            Canvas.SetLeft(_image, 0);
-            Canvas.SetTop(_image, 0);
-
-            CalculatePositions();
-            Left = _startPos.X;
-            Top = _startPos.Y;
+            Duration = (_currentSide == Side.Left || _currentSide == Side.Right) ? 3.5 : 5.0;
 
             _startTime = DateTime.Now;
+
+            UpdateAnimation(0);
 
             CompositionTarget.Rendering += OnRendering;
             Show();
@@ -207,66 +165,71 @@ namespace RIKA_IMBANIKA_LIFE_HELPER
             UpdateAnimation(elapsedSeconds);
         }
 
-        private void CalculatePositions()
-        {
-            double windowSize = _maxHeight;
-
-            switch (_currentSide)
-            {
-                case Side.Bottom:
-                    _startPos.Y = _endPos.Y = _screenHeight - windowSize;
-                    if (_currentDirection == Direction.Forward)
-                    { _startPos.X = -windowSize; _endPos.X = _screenWidth; }
-                    else
-                    { _startPos.X = _screenWidth; _endPos.X = -windowSize; }
-                    Duration = 5;
-                    break;
-                case Side.Top:
-                    _startPos.Y = _endPos.Y = 0;
-                    if (_currentDirection == Direction.Forward)
-                    { _startPos.X = -windowSize; _endPos.X = _screenWidth; }
-                    else
-                    { _startPos.X = _screenWidth; _endPos.X = -windowSize; }
-                    Duration = 5;
-                    break;
-                case Side.Left:
-                    _startPos.X = _endPos.X = 0;
-                    if (_currentDirection == Direction.Forward)
-                    { _startPos.Y = -windowSize; _endPos.Y = _screenHeight; }
-                    else
-                    { _startPos.Y = _screenHeight; _endPos.Y = -windowSize; }
-                    Duration = 3.5;
-                    break;
-                case Side.Right:
-                    _startPos.X = _endPos.X = _screenWidth - windowSize;
-                    if (_currentDirection == Direction.Forward)
-                    { _startPos.Y = -windowSize; _endPos.Y = _screenHeight; }
-                    else
-                    { _startPos.Y = _screenHeight; _endPos.Y = -windowSize; }
-                    Duration = 3.5;
-                    break;
-            }
-        }
-
         private void UpdateAnimation(double elapsedSeconds)
         {
             double t = elapsedSeconds / Duration;
-            Left = _startPos.X + (_endPos.X - _startPos.X) * t;
-            Top = _startPos.Y + (_endPos.Y - _startPos.Y) * t;
+            if (t < 0) t = 0;
+            if (t > 1) t = 1;
 
-            double sin = Math.Sin(2 * Math.PI * Frequency * elapsedSeconds);
-            double targetScale = 1 + Amplitude * sin;
-            double minScale = 1 - Amplitude;
-            double maxScale = 1 + Amplitude;
-            int index = (int)((targetScale - minScale) / (maxScale - minScale) * (_pulseImages.Length - 1) + 0.5);
+            double pulsePhase = (elapsedSeconds * Frequency) % 1.0;
+            if (pulsePhase < 0) pulsePhase += 1.0;
 
-            if (index != _lastIndex)
+            double x = 2.0 * pulsePhase - 1.0;
+            double shape = 1.0 - 2.0 * Math.Abs(x * x * x);
+
+            double scale = 1.0 + Amplitude * shape;
+
+            double cellW = _baseWidth;
+            double cellH = _baseHeight * scale;
+
+            _colMiddle.Width = new GridLength(cellW);
+            _rowMiddle.Height = new GridLength(cellH);
+
+            double visW, visH;
+            switch (_currentSide)
             {
-                int width = (int)_maxHeight;
-                int height = (int)_maxHeight;
-                _writeableBitmap.WritePixels(new Int32Rect(0, 0, width, height), _frameBuffers[index], _stride, 0);
-                _lastIndex = index;
+                case Side.Left:
+                case Side.Right:
+                    visW = cellH; visH = cellW; break;
+                default:
+                    visW = cellW; visH = cellH; break;
             }
+
+            double moveT = (_currentDirection == Direction.Forward) ? t : (1 - t);
+
+            double targetCenterX, targetCenterY;
+            switch (_currentSide)
+            {
+                case Side.Bottom:
+                    targetCenterY = _screenHeight - visH / 2.0;
+                    targetCenterX = -visW / 2.0 + moveT * (_screenWidth + visW);
+                    break;
+
+                case Side.Top:
+                    targetCenterY = visH / 2.0;
+                    targetCenterX = -visW / 2.0 + moveT * (_screenWidth + visW);
+                    break;
+
+                case Side.Left:
+                    targetCenterX = visW / 2.0;
+                    targetCenterY = -visH / 2.0 + moveT * (_screenHeight + visH);
+                    break;
+
+                case Side.Right:
+                    targetCenterX = _screenWidth - visW / 2.0;
+                    targetCenterY = -visH / 2.0 + moveT * (_screenHeight + visH);
+                    break;
+
+                default:
+                    targetCenterX = 0; targetCenterY = 0;
+                    break;
+            }
+
+            double gridX = targetCenterX - _maxWidth - cellW / 2.0;
+            double gridY = targetCenterY - _maxHeight - cellH / 2.0;
+
+            Canvas.SetLeft(_worldGrid, gridX);
+            Canvas.SetTop(_worldGrid, gridY);
         }
     }
 }
